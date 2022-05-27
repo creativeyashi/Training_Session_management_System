@@ -1,0 +1,94 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymleaf-extras-springsecurity5">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+
+    <style>
+        .error {
+           color: red;
+        }
+    </style>
+
+    <title>Save User</title>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="container">
+        <div class="alert alert-primary" role="alert" th:text="${success}" th:if="${success}"></div>
+        <div class="alert alert-danger" role="alert" th:text="${error}" th:if="${error}"></div>
+    </div>
+
+    <h3>Users Directory</h3>
+    <hr>
+
+    <p class="h4 mb-4">Save User</p>
+
+    <form action="#" th:action="@{/api/users/saveUpdated}"
+          th:object="${user}" method="POST">
+
+        <!-- Add hidden form field to handle update -->
+        <input type="hidden" th:field="*{id}" />
+
+        <input type="text" th:field="*{username}"
+               class="form-control mb-4 col-4" placeholder="username">
+        <ul>
+            <li th:each="err : ${#fields.errors('username')}" th:text="${err}" class="error" />
+        </ul>
+
+        <input type="text" th:field="*{password}"
+               class="form-control mb-4 col-4" placeholder="password">
+        <ul>
+            <li th:each="err : ${#fields.errors('password')}" th:text="${err}" class="error" />
+        </ul>
+
+        <input type="text" th:field="*{firstName}"
+               class="form-control mb-4 col-4" placeholder="First Name">
+        <ul>
+            <li th:each="err : ${#fields.errors('firstName')}" th:text="${err}" class="error" />
+        </ul>
+
+        <input type="text" th:field="*{lastName}"
+               class="form-control mb-4 col-4" placeholder="Last Name">
+        <ul>
+            <li th:each="err : ${#fields.errors('lastName')}" th:text="${err}" class="error" />
+        </ul>
+
+        <input type="text" th:field="*{age}"
+               class="form-control mb-4 col-4" placeholder="Age">
+        <ul>
+            <li th:each="err : ${#fields.errors('age')}" th:text="${err}" class="error" />
+        </ul>
+
+        <input type="text" th:field="*{gender}"
+               class="form-control mb-4 col-4" placeholder="Gender">
+        <ul>
+            <li th:each="err : ${#fields.errors('gender')}" th:text="${err}" class="error" />
+        </ul>
+
+        <input type="text" th:field="*{branch}"
+               class="form-control mb-4 col-4" placeholder="Branch">
+        <ul>
+            <li th:each="err : ${#fields.errors('branch')}" th:text="${err}" class="error" />
+        </ul>
+
+        <button type="submit" class="btn btn-info col-2">Save</button>
+
+    </form>
+
+    <hr>
+    <a th:href="@{/api/users/list}">Back to Users List</a>
+
+</div>
+</body>
+
+</html>

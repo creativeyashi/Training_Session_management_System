@@ -1,0 +1,64 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymleaf-extras-springsecurity5">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+
+    <style>
+        .error {
+           color: red;
+        }
+    </style>
+
+    <title>Add Speaker</title>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="container">
+        <div class="alert alert-primary" role="alert" th:text="${success}" th:if="${success}"></div>
+        <div class="alert alert-danger" role="alert" th:text="${error}" th:if="${error}"></div>
+    </div>
+
+    <h3>Add Speaker's Directory</h3>
+    <hr>
+
+    <p class="h4 mb-4">Save Speaker</p>
+
+    <form action="#" th:action="@{/api/speakers/save}"
+          th:object="${speaker}" method="POST">
+
+        <!-- Add hidden form field to handle update -->
+        <input type="hidden" th:field="*{id}" />
+
+        <input type="text" th:field="*{speakerName}"
+               class="form-control mb-4 col-4" placeholder="Speaker name">
+        <ul>
+            <li th:each="err : ${#fields.errors('speakerName')}" th:text="${err}" class="error" />
+        </ul>
+
+        <input type="text" th:field="*{speakerDesignation}"
+               class="form-control mb-4 col-4" placeholder="Speaker Designation">
+        <ul>
+            <li th:each="err : ${#fields.errors('speakerDesignation')}" th:text="${err}" class="error" />
+        </ul>
+
+        <button type="submit" class="btn btn-info col-2">Save</button>
+
+    </form>
+
+    <hr>
+    <a th:href="@{/api/speakers/list}">Back to Speakers List</a>
+
+</div>
+</body>
+
+</html>

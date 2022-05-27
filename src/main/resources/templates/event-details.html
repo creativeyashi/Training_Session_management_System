@@ -1,0 +1,23 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymleaf-extras-springsecurity5">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+
+    <title>Event Details</title>
+</head>
+<body>
+<h1 th:text="'Event name is:' + ${ #strings.toUpperCase(event.eventName) }"></h1>
+<h4 th:text="'Event venue is:' + ${ #strings.toUpperCase(event.eventVenue) }"></h4>
+<hr>
+<a th:href="@{/api/events/list}">Back to Event List</a>
+<hr>
+<a th:href="@{/api/speakers/list}">Click to see all speakers in this event</a>
+</body>
+</html>
