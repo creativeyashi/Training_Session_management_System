@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SpeakerController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">demo</a> &gt; <a href="index.source.html" class="el_package">com.yashika.demo.controller</a> &gt; <span class="el_source">SpeakerController.java</span></div><h1>SpeakerController.java</h1><pre class="source lang-java linenums">package com.yashika.demo.controller;
+
+import com.yashika.demo.entity.Events;
+import com.yashika.demo.entity.Speakers;
+import com.yashika.demo.services.EventsService;
+import com.yashika.demo.services.SpeakerService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import java.util.ArrayList;
+import java.util.List;
+
+@Controller
+@RequestMapping(&quot;/api/speakers&quot;)
+public class SpeakerController {
+    private SpeakerService speakerService;
+    private EventsService eventsService;
+
+    @Autowired
+<span class="fc" id="L24">    public SpeakerController(SpeakerService speakerService, EventsService eventsService){</span>
+
+<span class="fc" id="L26">        this.speakerService = speakerService;</span>
+<span class="fc" id="L27">        this.eventsService = eventsService;</span>
+<span class="fc" id="L28">    }</span>
+
+    @GetMapping(&quot;/list&quot;)
+    public String listSpeakers(Model model){
+<span class="nc" id="L32">        List&lt;Speakers&gt; speakers = speakerService.listSpeakers();</span>
+
+<span class="nc" id="L34">        int eventId = EventsController.passEventIdToSpeaker();</span>
+
+<span class="nc" id="L36">        List&lt;Speakers&gt; newSpeakersList = new ArrayList&lt;&gt;();</span>
+
+<span class="nc bnc" id="L38" title="All 2 branches missed.">        if(speakers != null){</span>
+<span class="nc bnc" id="L39" title="All 2 branches missed.">            for(Speakers speaker: speakers){</span>
+<span class="nc" id="L40">                List&lt;Events&gt; eventSpeakers = speaker.getEventsList();</span>
+<span class="nc bnc" id="L41" title="All 2 branches missed.">                for(Events eventSpeaker: eventSpeakers){</span>
+<span class="nc bnc" id="L42" title="All 2 branches missed.">                    if(eventSpeaker.getId() == eventId){</span>
+<span class="nc" id="L43">                        newSpeakersList.add(speaker);</span>
+                    }
+<span class="nc" id="L45">                }</span>
+<span class="nc" id="L46">            }</span>
+        }
+
+
+<span class="nc" id="L50">        model.addAttribute(&quot;speaker&quot;, newSpeakersList);</span>
+
+<span class="nc" id="L52">        return &quot;list-speakers&quot;;</span>
+    }
+
+    @GetMapping(&quot;/showFormForAdd&quot;)
+    public String showFormForAdd(Model model){
+<span class="nc" id="L57">        Speakers speaker = new Speakers();</span>
+
+<span class="nc" id="L59">        model.addAttribute(&quot;speaker&quot;, speaker);</span>
+
+<span class="nc" id="L61">        return &quot;speaker-form&quot;;</span>
+    }
+
+    @PostMapping(&quot;/save&quot;)
+    public String saveEmployee(@Valid @ModelAttribute(&quot;speaker&quot;) Speakers speaker, Model theModel,
+                               BindingResult bindingResult){
+
+<span class="nc bnc" id="L68" title="All 2 branches missed.">        if(bindingResult.hasErrors()){</span>
+<span class="nc" id="L69">            return &quot;speaker-form&quot;;</span>
+        }
+
+<span class="nc" id="L72">        int eventId = EventsController.passEventIdToSpeaker();</span>
+
+<span class="nc" id="L74">        List&lt;Events&gt; eventsList = speaker.getEventsList();</span>
+
+<span class="nc bnc" id="L76" title="All 2 branches missed.">        if(eventsList == null){</span>
+<span class="nc" id="L77">            eventsList = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L78">            Events events = eventsService.getEventById(eventId);</span>
+<span class="nc" id="L79">            eventsList.add(events);</span>
+
+<span class="nc" id="L81">            speaker.setEventsList(eventsList);</span>
+<span class="nc" id="L82">            speakerService.saveSpeaker(speaker);</span>
+
+<span class="nc" id="L84">            theModel.addAttribute(&quot;speaker&quot;, speaker);</span>
+
+<span class="nc" id="L86">            return &quot;redirect:/api/speakers/list&quot;;</span>
+        }
+
+<span class="nc" id="L89">        boolean flag = false;</span>
+
+<span class="nc bnc" id="L91" title="All 2 branches missed.">        for(Events event: eventsList){</span>
+<span class="nc bnc" id="L92" title="All 2 branches missed.">            if(event.getId() == eventId){</span>
+<span class="nc" id="L93">                flag = true;</span>
+<span class="nc" id="L94">                break;</span>
+            }
+<span class="nc" id="L96">        }</span>
+
+<span class="nc bnc" id="L98" title="All 2 branches missed.">        if(!flag){</span>
+<span class="nc" id="L99">            Events events = eventsService.getEventById(eventId);</span>
+<span class="nc" id="L100">            eventsList.add(events);</span>
+
+<span class="nc" id="L102">            speaker.setEventsList(eventsList);</span>
+<span class="nc" id="L103">            speakerService.saveSpeaker(speaker);</span>
+<span class="nc" id="L104">        }</span>
+        else{
+<span class="nc" id="L106">            String alreadyRegistered = speaker.getSpeakerName() + &quot; has already registered to this event&quot;;</span>
+
+<span class="nc" id="L108">            theModel.addAttribute(&quot;speaker&quot;, alreadyRegistered);</span>
+
+<span class="nc" id="L110">            return &quot;already-register-speaker&quot;;</span>
+        }
+
+<span class="nc" id="L113">        theModel.addAttribute(&quot;speaker&quot;, speaker);</span>
+
+<span class="nc" id="L115">        return &quot;redirect:/api/speakers/list&quot;;</span>
+    }
+
+    @PostMapping(&quot;/showFormForUpdate&quot;)
+    public String showFormForUpdate(@RequestParam(&quot;speakerId&quot;) int theId,
+                                    Model theModel) {
+
+<span class="nc" id="L122">        Speakers theSpeaker = speakerService.getSpeakerById(theId);</span>
+
+<span class="nc" id="L124">        theModel.addAttribute(&quot;speaker&quot;, theSpeaker);</span>
+
+<span class="nc" id="L126">        return &quot;speaker-form&quot;;</span>
+    }
+
+    @PostMapping(&quot;/delete&quot;)
+    public String delete(@RequestParam(&quot;speakerId&quot;) int theId) {
+<span class="nc" id="L131">        speakerService.deleteSpeaker(theId);</span>
+
+<span class="nc" id="L133">        return &quot;redirect:/api/speakers/list&quot;;</span>
+
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

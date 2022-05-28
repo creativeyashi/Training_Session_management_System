@@ -1,0 +1,7 @@
+organization=creativeyashi
+projectKey=yashika2000
+serverUrl=https://sonarcloud.io
+serverVersion=8.0.0.29264
+dashboardUrl=https://sonarcloud.io/dashboard?id=yashika2000
+ceTaskId=AYEGuU3TAkItqZCymSB-
+ceTaskUrl=https://sonarcloud.io/api/ce/task?id=AYEGuU3TAkItqZCymSB-

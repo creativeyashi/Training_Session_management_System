@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UsersController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">demo</a> &gt; <a href="index.source.html" class="el_package">com.yashika.demo.controller</a> &gt; <span class="el_source">UsersController.java</span></div><h1>UsersController.java</h1><pre class="source lang-java linenums">package com.yashika.demo.controller;
+
+
+import com.yashika.demo.entity.Roles;
+import com.yashika.demo.entity.Users;
+import com.yashika.demo.services.RoleService;
+import com.yashika.demo.services.UsersServiceInterface;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import javax.validation.Valid;
+import java.util.List;
+
+@Controller
+@RequestMapping(&quot;/api/users&quot;)
+public class UsersController {
+    private UsersServiceInterface usersService;
+
+    @Autowired
+    private RoleService roleService;
+
+    // logger added
+<span class="fc" id="L30">    private static final Logger logger = LoggerFactory.getLogger(UsersController.class);</span>
+
+    @Autowired
+<span class="fc" id="L33">    public UsersController(UsersServiceInterface usersService){</span>
+
+<span class="fc" id="L35">        this.usersService = usersService;</span>
+<span class="fc" id="L36">    }</span>
+
+    @GetMapping(&quot;/list&quot;)
+    public String listUsers(Model model){
+<span class="nc" id="L40">        List&lt;Users&gt; users = usersService.listUsers();</span>
+
+<span class="nc" id="L42">        model.addAttribute(&quot;user&quot;, users);</span>
+
+<span class="nc" id="L44">        return &quot;list-users&quot;;</span>
+    }
+
+    @GetMapping(&quot;/showFormForAdd&quot;)
+    public String showFormForAdd(Model model){
+<span class="nc" id="L49">        Users user = new Users();</span>
+
+<span class="nc" id="L51">        model.addAttribute(&quot;user&quot;, user);</span>
+
+<span class="nc" id="L53">        return &quot;user-form&quot;;</span>
+    }
+
+    @PostMapping(&quot;/save&quot;)
+    public String saveUser(@Valid @ModelAttribute(&quot;user&quot;) Users users,
+                               BindingResult bindingResult, RedirectAttributes redirAttrs){
+
+<span class="nc bnc" id="L60" title="All 2 branches missed.">        if(bindingResult.hasErrors()){</span>
+<span class="nc" id="L61">            return &quot;user-form&quot;;</span>
+        }
+
+<span class="nc" id="L64">        List&lt;Users&gt; allUsers = usersService.listUsers();</span>
+
+<span class="nc" id="L66">        boolean flag = false;</span>
+
+<span class="nc bnc" id="L68" title="All 2 branches missed.">        for(Users user: allUsers){</span>
+<span class="nc bnc" id="L69" title="All 2 branches missed.">            if(user.getUsername().equals(users.getUsername())){</span>
+<span class="nc" id="L70">                flag = true;</span>
+<span class="nc" id="L71">                break;</span>
+            }
+<span class="nc" id="L73">        }</span>
+
+<span class="nc bnc" id="L75" title="All 2 branches missed.">        if(flag){</span>
+<span class="nc" id="L76">            logger.warn(&quot;&gt;&gt;&gt;&gt;&gt;&gt; user already registered in the database!!&quot;);</span>
+
+<span class="nc" id="L78">            redirAttrs.addFlashAttribute(&quot;error&quot;, users.getUsername() + &quot; has already registered&quot;);</span>
+<span class="nc" id="L79">            return &quot;redirect:/api/users/showFormForAdd&quot;;</span>
+        }
+
+<span class="nc" id="L82">        Roles userRole = roleService.getRoleById(2);</span>
+<span class="nc" id="L83">        users.addRole(userRole);</span>
+
+<span class="nc" id="L85">        BCryptPasswordEncoder bcrypt = new BCryptPasswordEncoder();</span>
+<span class="nc" id="L86">        users.setPassword(bcrypt.encode(users.getPassword()));</span>
+
+<span class="nc" id="L88">        usersService.saveUser(users);</span>
+
+<span class="nc" id="L90">        logger.debug(&quot;&gt;&gt;&gt;&gt;&gt;&gt;&gt; user registered in the database&quot;);</span>
+
+<span class="nc" id="L92">        redirAttrs.addFlashAttribute(&quot;success&quot;, &quot;User Registered&quot;);</span>
+
+<span class="nc" id="L94">        return &quot;redirect:/api/users/list&quot;;</span>
+    }
+
+    @PostMapping(&quot;/saveUpdated&quot;)
+    public String saveUpdatedUser(@Valid @ModelAttribute(&quot;user&quot;) Users users,
+                                  BindingResult bindingResult){
+<span class="nc bnc" id="L100" title="All 2 branches missed.">        if(bindingResult.hasErrors()){</span>
+<span class="nc" id="L101">            return &quot;user-form-update&quot;;</span>
+        }
+
+<span class="nc" id="L104">        Roles userRole = roleService.getRoleById(2);</span>
+<span class="nc" id="L105">        users.addRole(userRole);</span>
+
+<span class="nc" id="L107">        BCryptPasswordEncoder bcrypt = new BCryptPasswordEncoder();</span>
+<span class="nc" id="L108">        users.setPassword(bcrypt.encode(users.getPassword()));</span>
+
+<span class="nc" id="L110">        usersService.saveUser(users);</span>
+
+<span class="nc" id="L112">        return &quot;redirect:/api/users/list&quot;;</span>
+
+    }
+
+    @PostMapping(&quot;/showFormForUpdate&quot;)
+    public String showFormForUpdate(@RequestParam(&quot;userId&quot;) int theId,
+                                    Model theModel) {
+
+<span class="nc" id="L120">        Users theUser = usersService.getUserById(theId);</span>
+
+<span class="nc" id="L122">        theModel.addAttribute(&quot;user&quot;, theUser);</span>
+
+<span class="nc" id="L124">        return &quot;user-form-update&quot;;</span>
+    }
+
+    @PostMapping (&quot;/delete&quot;)
+    public String delete(@RequestParam(&quot;userId&quot;) int theId) {
+
+<span class="nc" id="L130">        Users user = usersService.getUserById(theId);</span>
+<span class="nc" id="L131">        user.setRoles(null);</span>
+
+<span class="nc" id="L133">        usersService.deleteUser(theId);</span>
+
+<span class="nc" id="L135">        return &quot;redirect:/api/users/list&quot;;</span>
+
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Users.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">demo</a> &gt; <a href="index.source.html" class="el_package">com.yashika.demo.entity</a> &gt; <span class="el_source">Users.java</span></div><h1>Users.java</h1><pre class="source lang-java linenums">package com.yashika.demo.entity;
+
+import lombok.*;
+
+import javax.persistence.*;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+@Entity
+@Table(name = &quot;users&quot;)
+<span class="nc" id="L17">@AllArgsConstructor</span>
+<span class="fc" id="L18">@NoArgsConstructor</span>
+<span class="nc" id="L19">@Setter</span>
+@Getter
+<span class="nc" id="L21">@Builder</span>
+public class Users {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = &quot;user_id&quot;)
+<span class="fc" id="L26">    private int id;</span>
+
+    @Column(name = &quot;username&quot;)
+    @NotNull(message=&quot;is required&quot;)
+<span class="fc" id="L30">    private String username;</span>
+
+    @Column(name = &quot;password&quot;)
+    @NotNull(message=&quot;is required&quot;)
+    @Size(min=6, message=&quot;should have 6 or more characters&quot;)
+<span class="nc" id="L35">    private String password;</span>
+
+    @Column(name = &quot;first_name&quot;)
+    @NotNull(message=&quot;is required&quot;)
+    @Size(min=3, message=&quot;should have 3 or more characters&quot;)
+<span class="fc" id="L40">    private String firstName;</span>
+
+    @Column(name = &quot;last_name&quot;)
+    @NotNull(message=&quot;is required&quot;)
+    @Size(min=3, message=&quot;should have 3 or more characters&quot;)
+<span class="fc" id="L45">    private String lastName;</span>
+
+    @Column(name = &quot;age&quot;)
+    @NotNull(message=&quot;is required&quot;)
+    @Min(value=0, message = &quot;Must be greater than or equal to 0&quot;)
+    @Max(value=130, message = &quot;Must not be greater than 130&quot;)
+<span class="fc" id="L51">    private int age;</span>
+
+    @Column(name = &quot;gender&quot;)
+    @NotNull(message=&quot;is required&quot;)
+    @Size(max=1, message=&quot;write M for male and F for female&quot;)
+<span class="fc" id="L56">    private String gender;</span>
+
+    @Column(name = &quot;branch&quot;)
+    @NotNull(message=&quot;is required&quot;)
+    @Size(min=2, max = 5, message=&quot;should have 2-5 characters&quot;)
+<span class="fc" id="L61">    private String branch;</span>
+
+    @Column(name = &quot;enabled&quot;)
+<span class="nc" id="L64">    private boolean enabled;</span>
+
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.DETACH, CascadeType.PERSIST, CascadeType.REFRESH})
+    @JoinTable(name = &quot;user_event&quot;,
+            joinColumns = @JoinColumn(name = &quot;user_id&quot;),
+            inverseJoinColumns = @JoinColumn(name = &quot;event_id&quot;)
+    )
+<span class="fc" id="L71">    private List&lt;Events&gt; eventsList;</span>
+
+<span class="pc" id="L73">    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)</span>
+    @JoinTable(
+            name = &quot;user_role&quot;,
+            joinColumns = @JoinColumn(name = &quot;user_id&quot;),
+            inverseJoinColumns = @JoinColumn(name = &quot;role_id&quot;)
+    )
+<span class="nc" id="L79">    private Set&lt;Roles&gt; roles = new HashSet&lt;&gt;();</span>
+
+<span class="fc" id="L81">    public Users(String username, String password, String firstName, String lastName, int age, String gender, String branch) {</span>
+<span class="fc" id="L82">        this.username = username;</span>
+<span class="fc" id="L83">        this.password = password;</span>
+<span class="fc" id="L84">        this.firstName = firstName;</span>
+<span class="fc" id="L85">        this.lastName = lastName;</span>
+<span class="fc" id="L86">        this.age = age;</span>
+<span class="fc" id="L87">        this.gender = gender;</span>
+<span class="fc" id="L88">        this.branch = branch;</span>
+<span class="fc" id="L89">    }</span>
+
+    public void addEvent(Events tempEvent){
+<span class="fc bfc" id="L92" title="All 2 branches covered.">        if(this.eventsList == null){</span>
+<span class="fc" id="L93">            this.eventsList = new ArrayList&lt;&gt;();</span>
+        }
+
+<span class="fc" id="L96">        this.eventsList.add(tempEvent);</span>
+<span class="fc" id="L97">    }</span>
+
+    public void addRole(Roles role){
+<span class="pc bpc" id="L100" title="1 of 2 branches missed.">        if(this.roles == null){</span>
+<span class="nc" id="L101">            this.roles = new HashSet&lt;&gt;();</span>
+        }
+
+<span class="fc" id="L104">        this.roles.add(role);</span>
+<span class="fc" id="L105">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

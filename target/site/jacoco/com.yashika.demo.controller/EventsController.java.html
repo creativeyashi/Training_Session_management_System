@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EventsController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">demo</a> &gt; <a href="index.source.html" class="el_package">com.yashika.demo.controller</a> &gt; <span class="el_source">EventsController.java</span></div><h1>EventsController.java</h1><pre class="source lang-java linenums">package com.yashika.demo.controller;
+
+
+import com.yashika.demo.entity.Events;
+import com.yashika.demo.entity.Users;
+import com.yashika.demo.repository.MyUserDetails;
+import com.yashika.demo.services.EventsService;
+import com.yashika.demo.services.UsersServiceInterface;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.propertyeditors.StringTrimmerEditor;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import javax.validation.Valid;
+import java.util.List;
+
+@Controller
+@RequestMapping(&quot;/api/events&quot;)
+public class EventsController {
+    private EventsService eventsService;
+    private UsersServiceInterface usersService;
+
+    // logger added
+<span class="fc" id="L31">    private static final Logger logger = LoggerFactory.getLogger(EventsController.class);</span>
+
+    private static int eventIdToSpeaker;
+
+    @Autowired
+    public EventsController(EventsService eventsService,
+<span class="fc" id="L37">                            UsersServiceInterface usersService){</span>
+
+<span class="fc" id="L39">        this.eventsService = eventsService;</span>
+<span class="fc" id="L40">        this.usersService = usersService;</span>
+<span class="fc" id="L41">    }</span>
+
+    @InitBinder
+    public void initBinder(WebDataBinder webDataBinder){
+<span class="nc" id="L45">        StringTrimmerEditor trimSpaces = new StringTrimmerEditor(true);</span>
+
+<span class="nc" id="L47">        webDataBinder.registerCustomEditor(String.class, trimSpaces);</span>
+<span class="nc" id="L48">    }</span>
+
+    @GetMapping(&quot;/list&quot;)
+    public String listEvents(Model model){
+<span class="nc" id="L52">        List&lt;Events&gt; events = eventsService.listEvents();</span>
+
+<span class="nc" id="L54">        model.addAttribute(&quot;event&quot;, events);</span>
+
+<span class="nc" id="L56">        return &quot;list-events&quot;;</span>
+    }
+
+    @GetMapping(&quot;/showFormForAdd&quot;)
+    public String showFormForAdd(Model model){
+<span class="nc" id="L61">        Events event = new Events();</span>
+
+<span class="nc" id="L63">        model.addAttribute(&quot;event&quot;, event);</span>
+
+<span class="nc" id="L65">        return &quot;event-form&quot;;</span>
+    }
+
+    @PostMapping(&quot;/save&quot;)
+    public String saveEvent(@Valid @ModelAttribute(&quot;event&quot;) Events event,
+                               BindingResult bindingResult){
+
+<span class="nc bnc" id="L72" title="All 2 branches missed.">        if(bindingResult.hasErrors()){</span>
+<span class="nc" id="L73">            return &quot;event-form&quot;;</span>
+        }
+
+<span class="nc" id="L76">        eventsService.saveEvent(event);</span>
+
+<span class="nc" id="L78">        return &quot;redirect:/api/events/list&quot;;</span>
+    }
+
+    @PostMapping(&quot;/showFormForUpdate&quot;)
+    public String showFormForUpdate(@RequestParam(&quot;eventId&quot;) int theId,
+                                    Model theModel) {
+
+<span class="nc" id="L85">        Events theEvent = eventsService.getEventById(theId);</span>
+
+<span class="nc" id="L87">        theModel.addAttribute(&quot;event&quot;, theEvent);</span>
+
+<span class="nc" id="L89">        return &quot;event-form&quot;;</span>
+    }
+
+    @PostMapping(&quot;/register&quot;)
+    public String showFormRegister(@RequestParam(&quot;eventId&quot;) int theId,
+                                   Model theModel, RedirectAttributes redirAttrs) {
+
+<span class="nc" id="L96">        Events theEvent = eventsService.getEventById(theId);</span>
+<span class="nc" id="L97">        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();</span>
+
+<span class="nc bnc" id="L99" title="All 2 branches missed.">        if(principal instanceof MyUserDetails){</span>
+<span class="nc" id="L100">            String username = ((MyUserDetails)principal).getUsername();</span>
+<span class="nc" id="L101">            List&lt;Users&gt; usersList = theEvent.getUsersList();</span>
+
+<span class="nc" id="L103">            boolean flag = false;</span>
+
+<span class="nc bnc" id="L105" title="All 2 branches missed.">            for(Users user: usersList){</span>
+<span class="nc bnc" id="L106" title="All 2 branches missed.">                if(user.getUsername().equals(username)){</span>
+<span class="nc" id="L107">                    flag = true;</span>
+<span class="nc" id="L108">                    break;</span>
+                }
+<span class="nc" id="L110">            }</span>
+
+<span class="nc bnc" id="L112" title="All 2 branches missed.">            if(!flag){</span>
+                // add user as it has not enrolled in the course
+<span class="nc" id="L114">                Users users = usersService.getUserByUsername(username);</span>
+<span class="nc" id="L115">                usersList.add(users);</span>
+<span class="nc" id="L116">                theEvent.setUsersList(usersList);</span>
+<span class="nc" id="L117">                eventsService.saveEvent(theEvent);</span>
+<span class="nc" id="L118">            }</span>
+            else{
+<span class="nc" id="L120">                logger.warn(&quot;&gt;&gt;&gt;&gt;&gt;&gt; event already registered in the database!!&quot;);</span>
+
+<span class="nc" id="L122">                redirAttrs.addFlashAttribute(&quot;error&quot;, username + &quot; has already registered to this event&quot;);</span>
+<span class="nc" id="L123">                return &quot;redirect:/api/events/list&quot;;</span>
+            }
+        }
+
+<span class="nc" id="L127">        logger.debug(&quot;&gt;&gt;&gt;&gt;&gt;&gt;&gt; event registered in the database&quot;);</span>
+
+<span class="nc" id="L129">        theModel.addAttribute(&quot;event&quot;, theEvent);</span>
+
+<span class="nc" id="L131">        redirAttrs.addFlashAttribute(&quot;success&quot;, &quot;Registered for the event&quot;);</span>
+
+<span class="nc" id="L133">        return &quot;redirect:/api/events/list&quot;;</span>
+    }
+
+    @PostMapping(&quot;/delete&quot;)
+    public String delete(@RequestParam(&quot;eventId&quot;) int theId) {
+<span class="nc" id="L138">        eventsService.deleteEvent(theId);</span>
+
+<span class="nc" id="L140">        return &quot;redirect:/api/events/list&quot;;</span>
+
+    }
+
+    @PostMapping(&quot;/eventDetails&quot;)
+    public String eventDetails(@RequestParam(&quot;eventId&quot;) int theId,
+                               Model theModel){
+
+<span class="nc" id="L148">        Events theEvent = eventsService.getEventById(theId);</span>
+
+<span class="nc" id="L150">        eventIdToSpeaker = theId;</span>
+
+<span class="nc" id="L152">        theModel.addAttribute(&quot;event&quot;, theEvent);</span>
+<span class="nc" id="L153">        return &quot;event-details&quot;;</span>
+    }
+
+    public static int passEventIdToSpeaker(){
+<span class="nc" id="L157">        return eventIdToSpeaker;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>
