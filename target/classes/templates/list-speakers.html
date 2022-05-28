@@ -17,13 +17,13 @@
 
 <div class="container">
 
-    <div sec:authorize="isAuthenticated()">
-        Welcome <b><span sec:authentication="name">Username</span></b>
-        &nbsp;
-        <i><span sec:authentication="principal.authorities">Roles</span></i>
-    </div>
+<!--    <div sec:authorize="isAuthenticated()">-->
+<!--        Welcome <b><span sec:authentication="name">Username</span></b>-->
+<!--        &nbsp;-->
+<!--        <i><span sec:authentication="principal.authorities">Roles</span></i>-->
+<!--    </div>-->
 
-    <h3 th:inline="text">Welcome [[${#httpServletRequest.remoteUser}]]</h3>
+<!--    <h3 th:inline="text">Welcome [[${#httpServletRequest.remoteUser}]]</h3>-->
 
     <h3>Speaker's Directory</h3>
     <hr>

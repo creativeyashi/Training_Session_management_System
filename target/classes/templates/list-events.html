@@ -22,13 +22,13 @@
         <div class="alert alert-danger" role="alert" th:text="${error}" th:if="${error}"></div>
     </div>
 
-    <div sec:authorize="isAuthenticated()">
-        Welcome <b><span sec:authentication="name">Username</span></b>
-        &nbsp;
-        <i><span sec:authentication="principal.authorities">Roles</span></i>
-    </div>
+<!--    <div sec:authorize="isAuthenticated()">-->
+<!--        Welcome <b><span sec:authentication="name">Username</span></b>-->
+<!--        &nbsp;-->
+<!--        <i><span sec:authentication="principal.authorities">Roles</span></i>-->
+<!--    </div>-->
 
-    <h3 th:inline="text">Welcome [[${#httpServletRequest.remoteUser}]]</h3>
+<!--    <h3 th:inline="text">Welcome [[${#httpServletRequest.remoteUser}]]</h3>-->
 
     <h3>Event Directory</h3>
     <hr>
@@ -115,7 +115,8 @@
                         <form action="#" th:action="@{/api/events/eventDetails}" method="POST">
 
                             <input type="hidden" name="eventId" th:value="${tempEvent.id}" />
-                            <button type="submit" class="btn btn-info btn-sm ml-3 mr-1">View Details</button>
+                            <button type="submit" class="btn btn-info btn-sm ml-3 mr-1">View Speakers</button>
+
 
                         </form>
                     </div>

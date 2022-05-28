@@ -13,11 +13,36 @@
     <title>Event Details</title>
 </head>
 <body>
-<h1 th:text="'Event name is:' + ${ #strings.toUpperCase(event.eventName) }"></h1>
-<h4 th:text="'Event venue is:' + ${ #strings.toUpperCase(event.eventVenue) }"></h4>
+<div class="container">
 <hr>
-<a th:href="@{/api/events/list}">Back to Event List</a>
-<hr>
-<a th:href="@{/api/speakers/list}">Click to see all speakers in this event</a>
+<h3>Speaker's Directory</h3>
+    <hr>
+    <table class="table table-bordered table-striped">
+        <thead class="thead-dark">
+        <tr>
+            <th>Event Name</th>
+            <th>Event Venue</th>
+            <th>View Speaker Details</th>
+            <th>Back to Event List</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr >
+
+            <td th:text="${ #strings.toUpperCase(event.eventName) }" />
+            <td th:text="${ #strings.toUpperCase(event.eventVenue) }" />
+            <td>
+                <a th:href="@{/api/speakers/list}">SPEAKERS</a>
+            </td>
+                <td>
+                        <a th:href="@{/api/events/list}">BACK</a>
+                </td>
+
+
+        </tr>
+        </tbody>
+    </table>
+</div>
 </body>
 </html>
